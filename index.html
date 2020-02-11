@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<!-- 20170830 by Denickm -->
+<html>
+<head>
+  <title>Countries visited</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ==" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js" integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log==" crossorigin=""></script>
+  <style>#map { width: 100%; height: 300pt; }
+.info { padding: 6px 8px; font: 14px/16px Arial, Helvetica, sans-serif; background: white; background: rgba(255,255,255,0.8); box-shadow: 0 0 15px rgba(0,0,0,0.2); border-radius: 5px; } .info h4 { margin: 0 0 5px; color: #777; }
+.legend { text-align: left; line-height: 18px; color: #555; } .legend i { width: 18px; height: 18px; float: left; margin-right: 8px; opacity: 0.7; }</style>
+</head>
+<body>
+  <div id='map'></div>
+  <script type="text/javascript" src="countries1.js"></script>
+  <script type="text/javascript">
+    var enschede = [52.22068, 6.89589];
+    var curyear = new Date().getFullYear();
+    var map = L.map('map').setView(enschede, 4);
+
+    L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+      maxZoom: 18,
+      attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+          '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+            'Imagery &copy <a href="http://mapbox.com">Mapbox</a>',
+          id: 'mapbox.light'
+    }).addTo(map);
+
+
+    // control that shows state info on hover
+    var info = L.control();
+
+    info.onAdd = function (map) {
+          this._div = L.DomUtil.create('div', 'info');
+          this.update();
+          return this._div;
+    };
+
+    info.update = function (props) {
+          this._div.innerHTML = '<h4>Countries visited (Esmee)</h4>' + 
+           (props ?
+              '<b>' + props.name + '</b><br />'+ 
+              (props.yearvisited ? 'Visited in ' + props.yearvisited + 
+               (props.comment ? '<br/>'+props.comment : '')
+         :'Not visited')
+              : 'Hover/click a country');
+    };
+
+    info.addTo(map);
+
+    function style(feature) {
+          return {
+              weight: 2,
+              opacity: 1,
+              color: 'white',
+              dashArray: '3',
+              fillOpacity: 0.7,
+              fillColor: getColor(curyear - feature.properties.yearvisited)
+          };
+    }
+
+    function highlightFeature(e) {
+        //console.log('hovering '+e.target.feature.properties.name);
+          var layer = e.target;
+
+          layer.setStyle({
+              weight: 5,
+              color: '#666',
+              dashArray: '',
+              fillOpacity: 0.7
+          });
+
+          if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+              layer.bringToFront();
+          }
+
+          info.update(layer.feature.properties);
+    }
+
+    var geojson;
+
+    function resetHighlight(e) {
+          geojson.resetStyle(e.target);
+          info.update();
+    }
+
+    function zoomToFeature(e) {
+          map.fitBounds(e.target.getBounds());
+    }
+      
+    HTMLSelectElement.prototype.contains = function( value ) {
+
+    for ( var i = 0, l = this.options.length; i < l; i++ ) {
+
+          if ( this.options[i].value == value ) {
+              return true;
+          }
+      }
+      return false;
+    }
+    
+    function testdit(e) {
+        document.getElementById("action").disabled = false;
+      //open('https://www.aap.nl');
+      var name = e.target.feature.properties.name;
+      console.log('Clicked '+name);
+      var countryel = document.getElementById("country");
+      countryel.value = name;
+      var countrye2 = document.getElementById("countryTekst");
+      countrye2.innerHTML = name + ' visited in:';
+      
+      if (typeof e.target.feature.properties.yearvisited !== "undefined") {
+        document.getElementById("year").value = e.target.feature.properties.yearvisited;
+      }
+      else{
+        document.getElementById("year").value = curyear;
+      }
+      if (typeof e.target.feature.properties.comment !== "undefined") {
+        document.getElementById("comment").value = e.target.feature.properties.comment;
+      }
+      else{
+        document.getElementById("comment").value = '';
+      }
+      document.getElementById("year").focus();
+      
+    }
+      
+    // get color depending on d
+    function getColor(d) {
+      return d >= 7 ? '#FFEDA0' ://yellow
+        d >= 6 ? '#FED976' ://dark yellow
+        d >= 5 ? '#FEB24C' ://light orange
+        d >= 4 ? '#FD8D3C' ://orange
+        d >= 3 ? '#FC4E2A' ://dark orange
+        d >= 2 ? '#E31A1C' ://light red
+        d >= 1 ? '#BD0026' ://red
+        d >= 0 ? '#800026' ://dark red
+        '#e6e6e6'//grey
+    }
+      
+//  var bezocht = {countries:[]};
+ // console.log(' hoi ' + bezocht.countries.length);
+      
+      
+    function applyVisits(bz){
+      /*
+      for (i = 0; i < bz.countries.length; i++){
+        console.log(' a ');
+        console.log(bz.countries[i]);
+      }
+      */
+      console.log('landen: '+countries1.features.length);
+      console.log('bezocht: '+bz.countries.length);
+      
+      for ( let coun of countries1.features){
+        for ( let bzz of bz.countries){
+          if ( bzz.country == coun.properties.name ) {
+            coun.properties.yearvisited = bzz.yearvisited;
+            coun.properties.comment = bzz.comment;
+            //bzz.pop(); scheelt in snelheid maar wil niet?
+          }
+        }
+        if (typeof coun.properties.yearvisited !== "undefined") {
+          //console.log(coun.properties.name, coun.properties.yearvisited);
+        }
+      }
+    }
+	
+    function onEachFeature(feature, layer) {
+      //console.log('importing '+feature.properties.name);
+      //applyVisits(feature.properties.name);
+        layer.on({
+            mouseover: highlightFeature,
+            mouseout: resetHighlight,
+            //click: zoomToFeature
+            click: testdit
+        });
+    }
+
+
+    map.attributionControl.addAttribution('Country boundaries data &copy; <a href="http://www.naturalearthdata.com/">Natural Earth Data</a>');
+
+    var legend = L.control({position: 'bottomright'});
+
+    legend.onAdd = function (map) {
+        var div = L.DomUtil.create('div', 'info legend'),
+                grades = [0, 1, 2, 3, 4, 5, 6, 7],
+                labels = [],
+                from, to;
+        for (var i = 0; i < grades.length; i++) {
+          from = grades[i];
+          to = grades[i + 1];
+          labels.push(
+            '<i style="background:' + getColor(from + 1) + '"></i> ' +
+            from + (to ? '&ndash;' + to : '+'));
+        }
+        labels.push('<i style="background:' + getColor(-1) + '"></i> ' + 'n/a');
+        div.innerHTML = 'Years ago<br>' + labels.join('<br>');
+        return div;
+    };
+
+    legend.addTo(map);
+    
+    function XMLHTTPObject() {
+      var xmlhttp=false;
+      //If XMLHTTPReques is available
+      if (XMLHttpRequest) {
+        try {xmlhttp = new XMLHttpRequest();}
+        catch(e) {xmlhttp = false;}
+      } else if(typeof ActiveXObject != 'undefined') {
+        //Use IE's ActiveX items to load the file.
+        try {xmlhttp = new ActiveXObject("Msxml2.XMLHTTP");}
+        catch(e) {
+          try {xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");}
+          catch(E) {xmlhttp = false;}
+        }
+      } else  { xmlhttp = false;}//Browser don't support Ajax
+      return xmlhttp;
+    }	
+
+    //This function will be called when the form is submited
+    function saveData(evt) {
+      evt.preventDefault();
+      //disable the button until we have received the result, as to prevent double submit
+      document.getElementById("action").disabled = true;
+
+      var http = new XMLHTTPObject();
+      var sturen = { };
+      sturen.country = document.getElementById("country").value;
+      sturen.yearvisited = document.getElementById("year").value;
+      sturen.comment = document.getElementById("comment").value;
+      console.log('saving '+sturen.country+' '+sturen.yearvisited+' '+sturen.comment);
+      sturenjson = JSON.stringify(sturen);
+      //By calling this file, we have saved the data.
+      http.open("GET","save.php?data="+encodeURIComponent(sturenjson) ,true);
+      http.send(null);
+      //nieuwe waarden van countries updaten.
+      for (i=0;i<countries1.features.length;i++){
+        //naam zoeken
+        if ( countries1.features[i].properties.name == sturen.country ){
+          countries1.features[i].properties.yearvisited = sturen.yearvisited;
+          countries1.features[i].properties.comment = sturen.comment;
+          //special case: yearvisited = 0 -> remove
+          if(sturen.yearvisited == 0){
+            delete countries1.features[i].properties.yearvisited;
+            delete countries1.features[i].properties.comment;
+          }
+          break;
+        }
+      }
+      document.getElementById("action").disabled = false;//knop weer beschikbaar maken
+      //layer weghalen
+      map.removeLayer(geojson);
+      //en opnieuw instellen.
+        geojson = L.geoJson(countries1, {
+            style: style,
+            onEachFeature: onEachFeature
+        }).addTo(map);
+      return false;//Prevent the form from being submited
+    }
+
+    function init(user_id) {
+      console.log('user_id: '+user_id);
+      document.title += ' (Esmee)';//fixme
+      
+      var bezocht = {countries:[]};
+      var http = new XMLHTTPObject();
+      var resultobj = {};
+      //prolly ook type als json geven.
+      //http.open("GET","fetch.php?user="+user_id,true);
+      http.open("GET","fetch.php",true);
+      http.onreadystatechange = function() {
+        if(http.readyState == 4) {
+          if(http.status == 200) {
+            var res = http.responseText
+            if(res != null){
+              var resultobj = JSON.parse(res);
+              bezocht = resultobj;
+          
+              if((bezocht.countries.length > 0)){
+                applyVisits(bezocht);
+              }
+              else {
+                console.log('nothing fetched!?');
+              }
+              //json toevoegen aan de map, pas na het inlezen van de json
+              geojson = L.geoJson(countries1, {
+                style: style,
+                onEachFeature: onEachFeature
+              }).addTo(map);
+            }
+          }
+        }
+      }
+      http.send(null);
+      //document.getElementById("feedback_form").onsubmit = saveData();
+    }
+    var user_id = 1;//fixme
+    window.onload = init(user_id);
+  </script>
+  <form name="feedback_form" id="feedback_form" method="POST" action="#" onsubmit=" return saveData(event)">
+    <div id="form_elements">
+      <input name="country" id="country" type="hidden" value="" />
+      <div id="countryTekst">Hover/click a country</div>
+      <input name="year" id="year" type="number" title="Set year to 0 to remove country" /><br />
+      <input name="comment" id="comment" type="text" placeholder="Comments" size=40 /><br />
+      <input name="action" id="action" type="submit" value="Save" disabled />
+    </div>
+  </form>
+</body>
+</html>
+<script type="text/javascript">
+      document.getElementById('year').value = curyear;
+</script>
