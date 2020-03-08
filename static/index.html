@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<!-- 20170830 by Denickm -->
+<html>
+<head>
+  <title>Countries visited</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
+    crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
+    crossorigin=""></script>
+  <link rel="stylesheet" href="static/style.css" />
+</head>
+<body>
+  <div id='map'></div>
+  <script type="text/javascript" src="static/countries1.js"></script>
+  <script type="text/javascript" src="static/app.js"></script>
+  <form name="feedback_form" id="feedback_form" method="POST" action="#" onsubmit=" return saveData(event)">
+    <div id="form_elements">
+      <input name="country" id="country" type="hidden" value="" />
+      <div id="countryTekst">Hover/click a country</div>
+      <input name="year" id="year" type="number" title="Set year to 0 to remove country" /><br />
+      <input name="note" id="note" type="text" placeholder="Comments" size=40 /><br />
+      <input name="visit_id" id="visit_id" type="hidden" /><br />
+      <input name="action" id="action" type="submit" value="Save" disabled />
+    </div>
+  </form>
+</body>
+</html>
+<script type="text/javascript">
+    document.getElementById('year').value = curyear;
+</script>
