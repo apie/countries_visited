@@ -25,7 +25,7 @@ info.onAdd = function (map) {
 info.update = function (props) {
       this._div.innerHTML = '<h4>Countries visited ('+username+')</h4>' + 
        (props ?
-          '<b>' + props.name + '</b><br />'+ 
+          '<b>' + props.country + '</b><br />'+
           (props.year ? 'Visited in ' + props.year + 
            (props.note ? '<br/>'+props.note : '')
      :'Not visited')
@@ -34,6 +34,18 @@ info.update = function (props) {
 
 info.addTo(map);
 
+function sortVisits(visits) {
+  if (!visits) return;
+  var ar = Object.values(visits);
+  ar.sort(function(a, b){return b.year - a.year});
+  return ar
+}
+
+function getLatestVisit(visits) {
+  if (!visits) return;
+  return sortVisits(visits)[0];
+}
+
 function style(feature) {
       return {
           weight: 2,
@@ -41,7 +53,7 @@ function style(feature) {
           color: 'white',
           dashArray: '3',
           fillOpacity: 0.7,
-          fillColor: getColor(curyear - feature.properties.year)
+          fillColor: getColor(curyear - (getLatestVisit(feature.properties.visits) || {}).year)
       };
 }
 
@@ -59,7 +71,7 @@ function highlightFeature(e) {
         layer.bringToFront();
     }
 
-    info.update(layer.feature.properties);
+    info.update(getLatestVisit(layer.feature.properties.visits) || {country: layer.feature.properties.name});
 }
 
 var geojson;
@@ -80,33 +92,63 @@ HTMLSelectElement.prototype.contains = function( value ) {
     return false;
 }
 
-function clickFeature(e) {
-    document.getElementById("action").disabled = false;
-    var name = e.target.feature.properties.name;
-    var countryel = document.getElementById("country");
-    countryel.value = name;
-    var countrye2 = document.getElementById("countryTekst");
-    countrye2.innerHTML = name + ' visited in:';
+function showForm(id) {
+  document.getElementById("feedback_form").style = '';
+  var visit = document.visits && document.visits[id] || {};
+  if (typeof visit.year !== "undefined") {
+      document.getElementById("year").value = visit.year;
+  } else{
+      document.getElementById("year").value = curyear;
+  }
+  if (typeof visit.note !== "undefined") {
+      document.getElementById("note").value = visit.note;
+  } else{
+      document.getElementById("note").value = '';
+  }
+  if (typeof visit.id !== "undefined") {
+      document.getElementById("visit_id").value = visit.id;
+  } else{
+      document.getElementById("visit_id").value = '';
+  }
+  
+  document.getElementById("year").focus();
+}
 
-    if (typeof e.target.feature.properties.year !== "undefined") {
-        document.getElementById("year").value = e.target.feature.properties.year;
+function clickFeature(e) {
+    var v = e.target.feature.properties.visits;
+    if(!v) {
+      v = {0: {country: e.target.feature.properties.name}};
+      showForm();
     }
-    else{
-        document.getElementById("year").value = curyear;
-    }
-    if (typeof e.target.feature.properties.note !== "undefined") {
-        document.getElementById("note").value = e.target.feature.properties.note;
-    }
-    else{
-        document.getElementById("note").value = '';
-    }
-    if (typeof e.target.feature.properties.visit_id !== "undefined") {
-        document.getElementById("visit_id").value = e.target.feature.properties.visit_id;
-    }
-    else{
-        document.getElementById("visit_id").value = '';
-    }
-    document.getElementById("year").focus();
+    showList(v);
+}
+
+function showList(v) {
+    document.getElementById("feedback_form").style = 'display: none';
+    document.getElementById("action").disabled = false;
+    var vl = document.getElementById("visitList")
+    if(vl.childNodes.length) vl.removeChild(vl.childNodes[0])
+    var ul = document.createElement('ul');
+    ul.style = "margin: 1px; padding: 0";
+    document.visits = v;
+    if(v) vl.appendChild(ul);
+    sortVisits(v).forEach(function(k) {
+      var visit = k;
+      var countryel = document.getElementById("country");
+      countryel.value = visit.country;
+      var countrye2 = document.getElementById("countryTekst");
+      countrye2.innerHTML = visit.country + ' visited in:';
+      var a = document.createElement('a');
+      a.innerHTML = '<a href="#" onClick="showForm('+visit.id+')">'+visit.year + (visit.note?': '+visit.note:'')+'</a>';
+      var li = document.createElement('li');
+      li.appendChild(a);
+      if(visit.id) ul.appendChild(li);
+    });
+    var a = document.createElement('a');
+    a.innerHTML = '<a href="#" onClick="showForm()">New</a>';
+    var li = document.createElement('li');
+    li.appendChild(a);
+    ul.appendChild(li);
 }
   
 // get color depending on d
@@ -130,9 +172,13 @@ function applyVisits(bz){
   for ( let coun of countries1.features){
     for ( let bzz of bz){
       if ( bzz.country == coun.properties.name ) {
-        coun.properties.year = bzz.year;
-        coun.properties.note = bzz.note;
-        coun.properties.visit_id = bzz.id;
+        if (!coun.properties.visits) coun.properties.visits = {}
+        coun.properties.visits[bzz.id] = {
+          id: bzz.id,
+          country: bzz.country,
+          year: bzz.year,
+          note: bzz.note
+        }
         //bzz.pop(); scheelt in snelheid maar wil niet?
       }
     }
@@ -147,7 +193,7 @@ function onEachFeature(feature, layer) {
         mouseout: resetHighlight,
         click: clickFeature
     });
-    if (feature.properties.visit_id) maxBounds.extend(layer.getBounds());
+    if (feature.properties.visits) maxBounds.extend(layer.getBounds());
 }
 
 map.attributionControl.addAttribution('Country boundaries data &copy; <a href="http://www.naturalearthdata.com/">Natural Earth Data</a>');
@@ -210,40 +256,45 @@ function saveData(evt) {
   else http.open(sturen.id?'PUT':'POST', sturen.id?'api/visit/'+sturen.id:'api/visit', true);
   http.setRequestHeader("Content-Type", 'application/json');
   http.onreadystatechange = function() {
-    if(http.readyState == 4 && http.status == 201) {
+    if(http.readyState == 4 && (http.status == 200 || http.status == 201 || http.status == 204)) {
         var res = http.responseText
-        if(res != null){
+        if(res){
           var resultobj = JSON.parse(res);
           sturen.id = resultobj.id;
           document.getElementById("visit_id").value=resultobj.id;
         }
+        //nieuwe waarden van countries updaten.
+        for (i=0;i<countries1.features.length;i++){
+          //naam zoeken
+          if ( countries1.features[i].properties.name == sturen.country ){
+            if (!countries1.features[i].properties.visits) countries1.features[i].properties.visits = {}
+            countries1.features[i].properties.visits[sturen.id] = {
+              id: sturen.id,
+              country: sturen.country,
+              year: sturen.year,
+              note: sturen.note
+            }
+            //special case: year = 0 -> remove
+            if(sturen.year == 0) delete countries1.features[i].properties.visits[sturen.id];
+            break;
+          }
+        }
+        document.getElementById("action").disabled = false;//knop weer beschikbaar maken
+        //layer weghalen
+        map.removeLayer(geojson);
+        //en opnieuw instellen.
+          geojson = L.geoJson(countries1, {
+              style: style,
+              onEachFeature: onEachFeature
+          }).addTo(map);
+
+        //special case: year = 0 -> remove
+        if(sturen.year == 0) delete document.visits[sturen.id]
+        else document.visits[sturen.id] = sturen;
+        showList(document.visits);
     }
   }
   http.send(JSON.stringify(sturen));
-  //nieuwe waarden van countries updaten.
-  for (i=0;i<countries1.features.length;i++){
-    //naam zoeken
-    if ( countries1.features[i].properties.name == sturen.country ){
-      countries1.features[i].properties.year = sturen.year;
-      countries1.features[i].properties.note = sturen.note;
-      countries1.features[i].properties.visit_id = sturen.id;
-      //special case: year = 0 -> remove
-      if(sturen.year == 0){
-        delete countries1.features[i].properties.year;
-        delete countries1.features[i].properties.note;
-        delete countries1.features[i].properties.visit_id;
-      }
-      break;
-    }
-  }
-  document.getElementById("action").disabled = false;//knop weer beschikbaar maken
-  //layer weghalen
-  map.removeLayer(geojson);
-  //en opnieuw instellen.
-    geojson = L.geoJson(countries1, {
-        style: style,
-        onEachFeature: onEachFeature
-    }).addTo(map);
   return false;//Prevent the form from being submited
 }
 
