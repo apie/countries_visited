@@ -29,13 +29,13 @@ info.onAdd = function (map) {
 info.update = function (props) {
       let visitedContinentStr = '';
       for(var c in visitedContinent){
-        if (visitedContinent[c] > 0) visitedContinentStr += '<br />' + c + ': ' + Math.round(visitedContinent[c]*100/totalContinent[c])+'%';
+        if (visitedContinent[c] > 0) visitedContinentStr += `<br />${c}: ${Math.round(visitedContinent[c]*100/totalContinent[c])}%`;
       }
-      this._div.innerHTML = '<h4>Countries visited ('+titleUsername+')</h4>' + 
+      this._div.innerHTML = `<h4>Countries visited (${titleUsername})</h4>` + 
        (props ?
-          '<b>' + props.country + '</b><br />'+
-          (props.year ? 'Visited in ' + props.year + 
-           (props.note ? '<br/>'+props.note : '')
+          `<b>${props.country}</b><br />`+
+          (props.year ? `Visited in ${props.year}` + 
+           (props.note ? `<br/>${props.note}` : '')
      :'Not visited')
           : 'Hover/click a country' + visitedContinentStr);
 };
