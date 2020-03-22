@@ -55,13 +55,14 @@ function getLatestVisit(visits) {
 }
 
 function style(feature) {
+      let latestVisit = getLatestVisit(feature.properties.visits) || {};
       return {
           weight: 2,
           opacity: 1,
           color: 'white',
           dashArray: '3',
           fillOpacity: 0.7,
-          fillColor: getColor(curyear - (getLatestVisit(feature.properties.visits) || {}).year)
+          fillColor: latestVisit.note == 'hier woon ik' && 'green' || getColor(curyear - latestVisit.year)
       };
 }
 
@@ -179,7 +180,9 @@ function applyVisits(bz){
   for ( let coun of countries1.features){
     for ( let bzz of bz){
       if ( bzz.country == coun.properties.name ) {
-        //special case: year = 0 -> remove
+        //special case:
+        if(bzz.note == 'hier woon ik') bzz.year = curyear;
+        //special case: year == 0 -> remove
         if(bzz.year == 0) {
           let i = countries1.features.findIndex(f => f.properties.visits && f.properties.visits[bzz.id]);
           if (i>0) delete countries1.features[i].properties.visits[bzz.id];
