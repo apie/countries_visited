@@ -1,5 +1,9 @@
 var url = new URL(document.URL);
 var username = url.searchParams.get('user');
+var titleUsername = username[0].toUpperCase() + username.substr(1);
+var totalContinent = {};
+var visitedContinent = {};
+
 var enschede = [52.22068, 6.89589];
 var curyear = new Date().getFullYear();
 var map = L.map('map').setView(enschede, 4);
@@ -23,13 +27,17 @@ info.onAdd = function (map) {
 };
 
 info.update = function (props) {
-      this._div.innerHTML = '<h4>Countries visited ('+username+')</h4>' + 
+      let visitedContinentStr = '';
+      for(var c in visitedContinent){
+        if (visitedContinent[c] > 0) visitedContinentStr += '<br />' + c + ': ' + Math.round(visitedContinent[c]*100/totalContinent[c])+'%';
+      }
+      this._div.innerHTML = '<h4>Countries visited ('+titleUsername+')</h4>' + 
        (props ?
           '<b>' + props.country + '</b><br />'+
           (props.year ? 'Visited in ' + props.year + 
            (props.note ? '<br/>'+props.note : '')
      :'Not visited')
-          : 'Hover/click a country');
+          : 'Hover/click a country' + visitedContinentStr);
 };
 
 info.addTo(map);
@@ -166,15 +174,19 @@ function getColor(d) {
   
   
 function applyVisits(bz){
-  console.log('Countries: '+countries1.features.length);
-  console.log('Number of visits: '+bz.length);
-  let c = new Set(bz.map(c => c.country))
-  console.log('Countries visited: '+c.size);
-  console.log(c);
+  let visitedCountries = new Set();
   
   for ( let coun of countries1.features){
     for ( let bzz of bz){
       if ( bzz.country == coun.properties.name ) {
+        //special case: year = 0 -> remove
+        if(bzz.year == 0) {
+          let i = countries1.features.findIndex(f => f.properties.visits && f.properties.visits[bzz.id]);
+          if (i>0) delete countries1.features[i].properties.visits[bzz.id];
+          if (visitedContinent[coun.properties.continent]) visitedContinent[coun.properties.continent] -= 1
+          info.update();
+          break;
+        };
         if (!coun.properties.visits) coun.properties.visits = {}
         coun.properties.visits[bzz.id] = {
           id: bzz.id,
@@ -182,10 +194,14 @@ function applyVisits(bz){
           year: bzz.year,
           note: bzz.note
         }
+        // Only count the countries for countries per continent so just count the first visit.
+        if (!visitedCountries.has(bzz.country)) visitedContinent[coun.properties.continent]?visitedContinent[coun.properties.continent] += 1:visitedContinent[coun.properties.continent] = 1;
+        visitedCountries.add(bzz.country);
         //bzz.pop(); scheelt in snelheid maar wil niet?
       }
     }
   }
+  info.update();
 }
 
 var maxBounds = new L.latLngBounds(new L.latLng([0,0]), new L.latLng([0,0]));
@@ -266,22 +282,7 @@ function saveData(evt) {
           sturen.id = resultobj.id;
           document.getElementById("visit_id").value=resultobj.id;
         }
-        //nieuwe waarden van countries updaten.
-        for (i=0;i<countries1.features.length;i++){
-          //naam zoeken
-          if ( countries1.features[i].properties.name == sturen.country ){
-            if (!countries1.features[i].properties.visits) countries1.features[i].properties.visits = {}
-            countries1.features[i].properties.visits[sturen.id] = {
-              id: sturen.id,
-              country: sturen.country,
-              year: sturen.year,
-              note: sturen.note
-            }
-            //special case: year = 0 -> remove
-            if(sturen.year == 0) delete countries1.features[i].properties.visits[sturen.id];
-            break;
-          }
-        }
+        applyVisits([sturen]);
         document.getElementById("action").disabled = false;//knop weer beschikbaar maken
         //layer weghalen
         map.removeLayer(geojson);
@@ -302,7 +303,8 @@ function saveData(evt) {
 }
 
 function init(username) {
-    document.title += ' ('+username+')';
+    document.title += ' ('+titleUsername+')';
+    countries1.features.map(f => f.properties.continent).forEach(ct => totalContinent[ct]?totalContinent[ct] += 1:totalContinent[ct] = 1)
 
     var bezocht = {countries:[]};
     var http = new XMLHTTPObject();
@@ -314,14 +316,22 @@ function init(username) {
             if(res != null){
                 var resultobj = JSON.parse(res);
                 bezocht = resultobj;
-                if(bezocht.num_results > 0) applyVisits(bezocht.objects);
+                if(bezocht.num_results > 0) {
+                  console.log('Countries: '+countries1.features.length);
+                  console.log('Number of visits: '+bezocht.objects.length);
+                  let c = new Set(bezocht.objects.map(c => c.country))
+                  console.log('Countries visited: '+c.size);
+                  console.log(Array.from(c).sort().join(', '));
+                  applyVisits(bezocht.objects);
+                };
                 //json toevoegen aan de map, pas na het inlezen van de json
                 geojson = L.geoJson(countries1, {
                     style: style,
                     onEachFeature: onEachFeature
                 }).addTo(map);
                 //Only fit if bounds are not at 0,0.
-                if (maxBounds.getCenter().distanceTo([0,0]) > 0) map.fitBounds(maxBounds)
+                if (maxBounds.getCenter().distanceTo([0,0]) > 0) map.fitBounds(maxBounds);
+                info.update();
             }
         }
     }
