@@ -258,6 +258,11 @@ function XMLHTTPObject() {
   return xmlhttp;
 }	
 
+var escapeHtml = s => (s + '').replace(/[&<>"']/g, m => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;',
+    '"': '&quot;', "'": '&#39;'
+})[m]);
+
 //This function will be called when the form is submited
 function saveData(evt) {
   evt.preventDefault();
@@ -265,10 +270,10 @@ function saveData(evt) {
   document.getElementById("action").disabled = true;
 
   var sturen = {
-      country: document.getElementById("country").value,
-      year: document.getElementById("year").value,
-      note: document.getElementById("note").value,
-      username: username
+      country: escapeHtml(document.getElementById("country").value),
+      year: escapeHtml(document.getElementById("year").value),
+      note: escapeHtml(document.getElementById("note").value),
+      username: escapeHtml(username)
   };
   var visit_id = document.getElementById("visit_id").value;
   if (visit_id) sturen.id = visit_id;
