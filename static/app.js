@@ -166,8 +166,11 @@ function getColor(d) {
   
   
 function applyVisits(bz){
-  console.log('landen: '+countries1.features.length);
-  console.log('bezocht: '+bz.length);
+  console.log('Countries: '+countries1.features.length);
+  console.log('Number of visits: '+bz.length);
+  let c = new Set(bz.map(c => c.country))
+  console.log('Countries visited: '+c.size);
+  console.log(c);
   
   for ( let coun of countries1.features){
     for ( let bzz of bz){
