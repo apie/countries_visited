@@ -14,17 +14,19 @@
 </head>
 <body>
   <div id='map'></div>
-  <div id="countryTekst">Hover/click a country</div>
-  <div id="visitList"></div>
-  <form name="feedback_form" id="feedback_form" method="POST" action="#" onsubmit=" return saveData(event)" style="display:none">
-    <div id="form_elements">
-      <input name="country" id="country" type="hidden" value="" />
-      <input name="year" id="year" type="number" title="Set year to 0 to remove country" max="9999" style="width: 15vw" />
-      <input name="note" id="note" type="text" placeholder="Comments" size=40 /><br />
-      <input name="visit_id" id="visit_id" type="hidden" />
-      <input name="action" id="action" type="submit" value="Save" disabled />
+    <div id="container">
+      <div id="countryTekst">Hover/click a country</div>
+      <div id="visitList"></div>
+      <form name="feedback_form" id="feedback_form" method="POST" action="#" onsubmit=" return saveData(event)" style="display:none">
+        <div id="form_elements">
+          <input name="country" id="country" type="hidden" value="" />
+          <input name="year" id="year" type="number" title="Set year to 0 to remove country" max="9999" style="width: 15vw" />
+          <input name="note" id="note" type="text" placeholder="Comments" size=40 /><br />
+          <input name="visit_id" id="visit_id" type="hidden" />
+          <input name="action" id="action" type="submit" value="Save" disabled />
+        </div>
+      </form>
     </div>
-  </form>
 </body>
 </html>
 <script type="text/javascript" src="static/countries1.js"></script>
