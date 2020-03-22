@@ -20,7 +20,7 @@ class Visit(db.Model):
 
 db.create_all()
 manager = flask_restless.APIManager(app, flask_sqlalchemy_db=db)
-manager.create_api(Visit, methods=['GET', 'POST', 'PUT', 'DELETE'])
+manager.create_api(Visit, methods=['GET', 'POST', 'PUT', 'DELETE'], results_per_page=-1)
 
 from flask import request, send_from_directory
 
