@@ -13,6 +13,9 @@
     margin: 0 0 5px;
     color: #777;
 }
+.info li {
+    margin-left: 10px;
+}
 .legend {
     text-align: left;
     line-height: 18px;
@@ -27,16 +30,19 @@
 }
 #container {
     position: absolute;
-    top: 80vh;
-    left: 20px;
+    top: 75vh;
+    left: 1vw;
     z-index: 1000;
     overflow-y: scroll;
-    height: 131px;
-    width: 369px;
-    padding: 6px 18px;
-    font: 14px/16px Arial, Helvetica, sans-serif;
-    background: rgba(255,255,255,0.8);
-    box-shadow: 0 0 15px rgba(0,0,0,0.2);
-    border-radius: 5px;
+    height: 20vh;
+    width: 67vw;
 }
-
+#visitList {
+    padding: 3px;
+}
+#year {
+    width: 15vw;
+}
+#note {
+    width: 60vw;
+}

@@ -148,15 +148,21 @@ function showList(v) {
       var countrye2 = document.getElementById("countryTekst");
       countrye2.innerHTML = visit.country + ' visited in:';
       var a = document.createElement('a');
-      a.innerHTML = '<a href="#" onClick="showForm('+visit.id+')">'+visit.year + (visit.note?': '+visit.note:'')+'</a>';
+      a.setAttribute('href', '#');
+      a.setAttribute('onClick', `showForm(${visit.id})`);
+      a.text = visit.year + (visit.note?': '+visit.note:'');
       var li = document.createElement('li');
       li.appendChild(a);
       if(visit.id) ul.appendChild(li);
     });
     var a = document.createElement('a');
-    a.innerHTML = '<a href="#" onClick="showForm()">New</a>';
+    a.setAttribute('href', '#');
+    a.setAttribute('onClick', 'showForm()');
+    a.text = 'New';
+    var b = document.createElement('b');
+    b.appendChild(a);
     var li = document.createElement('li');
-    li.appendChild(a);
+    li.appendChild(b);
     ul.appendChild(li);
 }
   
@@ -235,7 +241,7 @@ legend.onAdd = function (map) {
         from + (to ? '&ndash;' + to : '+'));
     }
     labels.push('<i style="background:' + getColor(-1) + '"></i> ' + 'n/a');
-    div.innerHTML = 'Years ago<br>' + labels.join('<br>');
+    div.innerHTML = '<h4>Years ago</h4>' + labels.join('<br>');
     return div;
 };
 
