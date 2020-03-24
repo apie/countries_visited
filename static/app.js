@@ -122,6 +122,7 @@ function showForm(id) {
       document.getElementById("visit_id").value = '';
   }
   
+  document.getElementById("year").scrollIntoView();
   document.getElementById("year").focus();
 }
 
@@ -160,7 +161,7 @@ function showList(v) {
     var a = document.createElement('a');
     a.setAttribute('href', '#');
     a.setAttribute('onClick', 'showForm()');
-    a.text = 'New';
+    a.text = 'Add visit';
     var b = document.createElement('b');
     b.appendChild(a);
     var li = document.createElement('li');
