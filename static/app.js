@@ -7,6 +7,8 @@ var visitedContinent = {};
 var enschede = [52.22068, 6.89589];
 var curyear = new Date().getFullYear();
 var map = L.map('map').setView(enschede, 4);
+const HOME = 'hier woon ik';
+const HOME_COLOR = 'green'
 
 L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
   maxZoom: 18,
@@ -62,7 +64,7 @@ function style(feature) {
           color: 'white',
           dashArray: '3',
           fillOpacity: 0.7,
-          fillColor: latestVisit.note == 'hier woon ik' && 'green' || getColor(curyear - latestVisit.year)
+          fillColor: latestVisit.note == HOME && HOME_COLOR || getColor(curyear - latestVisit.year)
       };
 }
 
@@ -186,7 +188,7 @@ function applyVisits(bz){
     for ( let bzz of bz){
       if ( bzz.country == coun.properties.name ) {
         //special case:
-        if(bzz.note == 'hier woon ik') bzz.year = curyear;
+        if(bzz.note == HOME) bzz.year = curyear;
         //special case: year == 0 -> remove
         if(bzz.year == 0) {
           let i = countries1.features.findIndex(f => f.properties.visits && f.properties.visits[bzz.id]);
@@ -230,6 +232,7 @@ legend.onAdd = function (map) {
             grades = [0, 1, 2, 3, 4, 5, 6, 7],
             labels = [],
             from, to;
+    labels.push('<i style="background:' + HOME_COLOR + '"></i> ' + 'home');
     for (var i = 0; i < grades.length; i++) {
       from = grades[i];
       to = grades[i + 1];
