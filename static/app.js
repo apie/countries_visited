@@ -29,7 +29,7 @@ info.onAdd = function (map) {
 info.update = function (props) {
       let visitedContinentStr = '';
       for(var c in visitedContinent){
-        if (visitedContinent[c] > 0) visitedContinentStr += `<br />${c}: ${Math.round(visitedContinent[c]*100/totalContinent[c])}%`;
+        if (visitedContinent[c].size > 0) visitedContinentStr += `<br />${c}: ${Math.round(visitedContinent[c].size*100/totalContinent[c])}%`;
       }
       this._div.innerHTML = `<h4>Countries visited (${titleUsername})</h4>` + 
        (props ?
@@ -181,7 +181,6 @@ function getColor(d) {
   
   
 function applyVisits(bz){
-  let visitedCountries = new Set();
   
   for ( let coun of countries1.features){
     for ( let bzz of bz){
@@ -192,7 +191,7 @@ function applyVisits(bz){
         if(bzz.year == 0) {
           let i = countries1.features.findIndex(f => f.properties.visits && f.properties.visits[bzz.id]);
           if (i>0) delete countries1.features[i].properties.visits[bzz.id];
-          if (visitedContinent[coun.properties.continent]) visitedContinent[coun.properties.continent] -= 1
+          if (coun.properties.continent in visitedContinent) visitedContinent[coun.properties.continent].delete(bzz.country);
           info.update();
           break;
         };
@@ -203,10 +202,8 @@ function applyVisits(bz){
           year: bzz.year,
           note: bzz.note
         }
-        // Only count the countries for countries per continent so just count the first visit.
-        if (!visitedCountries.has(bzz.country)) visitedContinent[coun.properties.continent]?visitedContinent[coun.properties.continent] += 1:visitedContinent[coun.properties.continent] = 1;
-        visitedCountries.add(bzz.country);
-        //bzz.pop(); scheelt in snelheid maar wil niet?
+        if (!(coun.properties.continent in visitedContinent)) visitedContinent[coun.properties.continent] = new Set()
+        visitedContinent[coun.properties.continent].add(bzz.country);
       }
     }
   }
