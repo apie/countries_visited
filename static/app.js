@@ -232,16 +232,16 @@ legend.onAdd = function (map) {
             grades = [0, 1, 2, 3, 4, 5, 6, 7],
             labels = [],
             from, to;
-    labels.push('<i style="background:' + HOME_COLOR + '"></i> ' + 'home');
+    labels.push(`<i style="background:${HOME_COLOR}"></i> home`);
     for (var i = 0; i < grades.length; i++) {
       from = grades[i];
       to = grades[i + 1];
       labels.push(
-        '<i style="background:' + getColor(from + 1) + '"></i> ' +
+        `<i style="background:${getColor(from + 1)}"></i> ` +
         from + (to ? '&ndash;' + to : '+'));
     }
-    labels.push('<i style="background:' + getColor(-1) + '"></i> ' + 'n/a');
-    div.innerHTML = '<h4>Years ago</h4>' + labels.join('<br>');
+    labels.push(`<i style="background:${getColor(-1)}"></i> n/a`);
+    div.innerHTML = `<h4>Years ago</h4>${labels.join('<br>')}`;
     return div;
 };
 
