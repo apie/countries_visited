@@ -152,7 +152,7 @@ function showList(v) {
       countrye2.innerHTML = visit.country + ' visited in:';
       var a = document.createElement('a');
       a.setAttribute('href', '#');
-      a.setAttribute('onClick', `showForm(${visit.id})`);
+      a.setAttribute('onClick', `event.preventDefault(); showForm(${visit.id})`);
       a.text = visit.year + (visit.note?': '+visit.note:'');
       var li = document.createElement('li');
       li.appendChild(a);
@@ -160,7 +160,7 @@ function showList(v) {
     });
     var a = document.createElement('a');
     a.setAttribute('href', '#');
-    a.setAttribute('onClick', 'showForm()');
+    a.setAttribute('onClick', 'event.preventDefault(); showForm()');
     a.text = 'Add visit';
     var b = document.createElement('b');
     b.appendChild(a);
