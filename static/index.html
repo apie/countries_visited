@@ -15,7 +15,10 @@
 <body>
   <div id='map'></div>
     <div id="container" class="info">
-      <h4 id="countryTekst">Hover/click a country</h4>
+      <div class="flex" >
+        <h4 id="countryTekst">Hover/click a country</h4>
+        <a href="#" class="no-underline ml-1" onClick="event.preventDefault(); showForm()" title "Add visit">➕</a>
+      </div>
       <div id="visitList"></div>
       <form name="feedback_form" id="feedback_form" method="POST" action="#" onsubmit=" return saveData(event)" style="display:none">
         <div id="form_elements">

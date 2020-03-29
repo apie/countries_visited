@@ -158,14 +158,6 @@ function showList(v) {
       li.appendChild(a);
       if(visit.id) ul.appendChild(li);
     });
-    var a = document.createElement('a');
-    a.setAttribute('href', '#');
-    a.classList.add('no-underline');
-    a.classList.add('ml-1');
-    a.setAttribute('onClick', 'event.preventDefault(); showForm()');
-    a.title = 'Add visit';
-    a.text = '➕';
-    countrye2.appendChild(a);
 }
   
 // get color depending on d
