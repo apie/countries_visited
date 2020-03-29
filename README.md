@@ -5,7 +5,7 @@ Based on:
  - https://leafletjs.com/examples/choropleth/
  
 Dataset:
- - https://datahub.io/core/geo-countries#resource-countries (I modified it and have sliced the UK)
+ - https://datahub.io/core/geo-countries#resource-countries / https://geojson-maps.ash.ms/
  
 Inspired by:
  - The visited-map Couchsurfing used to have.
