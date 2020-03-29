@@ -57,3 +57,9 @@ input[type=submit] {
     border-radius: 13%;
     padding-inline: 10px;
 }
+a.no-underline {
+    text-decoration: none;
+}
+.ml-1 {
+    margin-left: 2px;
+}

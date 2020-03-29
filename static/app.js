@@ -144,29 +144,28 @@ function showList(v) {
     ul.style = "margin: 1px; padding: 0";
     document.visits = v;
     if(v) vl.appendChild(ul);
+    var countryel = document.getElementById("country");
+    var countrye2 = document.getElementById("countryTekst");
     sortVisits(v).forEach(function(k) {
       var visit = k;
-      var countryel = document.getElementById("country");
       countryel.value = visit.country;
-      var countrye2 = document.getElementById("countryTekst");
-      countrye2.innerHTML = visit.country + ' visited in:';
+      countrye2.innerHTML = 'Visits to ' + visit.country + ':';
       var a = document.createElement('a');
       a.setAttribute('href', '#');
       a.setAttribute('onClick', `event.preventDefault(); showForm(${visit.id})`);
-      a.text = visit.year + (visit.note?': '+visit.note:'');
+      a.innerHTML = visit.year + (visit.note?': '+visit.note:'');
       var li = document.createElement('li');
       li.appendChild(a);
       if(visit.id) ul.appendChild(li);
     });
     var a = document.createElement('a');
     a.setAttribute('href', '#');
+    a.classList.add('no-underline');
+    a.classList.add('ml-1');
     a.setAttribute('onClick', 'event.preventDefault(); showForm()');
-    a.text = 'Add visit';
-    var b = document.createElement('b');
-    b.appendChild(a);
-    var li = document.createElement('li');
-    li.appendChild(b);
-    ul.appendChild(li);
+    a.title = 'Add visit';
+    a.text = '➕';
+    countrye2.appendChild(a);
 }
   
 // get color depending on d
@@ -265,8 +264,8 @@ function XMLHTTPObject() {
   return xmlhttp;
 }	
 
-var escapeHtml = s => (s + '').replace(/[&<>"']/g, m => ({
-    '&': '&amp;', '<': '&lt;', '>': '&gt;',
+var escapeHtml = s => (s + '').replace(/[;<>"']/g, m => ({
+    ';': '&semi;', '<': '&lt;', '>': '&gt;',
     '"': '&quot;', "'": '&#39;'
 })[m]);
 
