@@ -1,5 +1,5 @@
 var url = new URL(document.URL);
-var username = url.searchParams.get('user');
+var username = url.searchParams.get('user') || 'unknown';
 var titleUsername = username[0].toUpperCase() + username.substr(1);
 var totalContinent = {};
 var visitedContinent = {};
