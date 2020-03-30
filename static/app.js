@@ -104,7 +104,7 @@ HTMLSelectElement.prototype.contains = function( value ) {
 }
 
 function showForm(id) {
-  document.getElementById("feedback_form").style = '';
+  document.getElementById("feedback_form").classList.remove('d-none');
   var visit = document.visits && document.visits[id] || {};
   if (typeof visit.year !== "undefined") {
       document.getElementById("year").value = visit.year;
@@ -136,7 +136,8 @@ function clickFeature(e) {
 }
 
 function showList(v) {
-    document.getElementById("feedback_form").style = 'display: none';
+    document.getElementById("addVisit").classList.remove('d-none');
+    document.getElementById("feedback_form").classList.add('d-none');
     document.getElementById("action").disabled = false;
     var vl = document.getElementById("visitList")
     if(vl.childNodes.length) vl.removeChild(vl.childNodes[0])

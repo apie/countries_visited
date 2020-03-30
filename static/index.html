@@ -17,10 +17,10 @@
     <div id="container" class="info">
       <div class="flex" >
         <h4 id="countryTekst">Hover/click a country</h4>
-        <a href="#" class="no-underline ml-1" onClick="event.preventDefault(); showForm()" title "Add visit">➕</a>
+        <a id="addVisit" href="#" class="d-none no-underline ml-1" onClick="event.preventDefault(); showForm()" title "Add visit">➕</a>
       </div>
       <div id="visitList"></div>
-      <form name="feedback_form" id="feedback_form" method="POST" action="#" onsubmit=" return saveData(event)" style="display:none">
+      <form name="feedback_form" id="feedback_form" method="POST" action="#" onsubmit=" return saveData(event)" class="d-none">
         <div id="form_elements">
           <input name="country" id="country" type="hidden" value="" />
           <input name="year" id="year" type="number" title="Set year to 0 to remove country" max="9999" />
