@@ -1,6 +1,3 @@
-var url = new URL(document.URL);
-var username = url.searchParams.get('user') || 'unknown';
-var titleUsername = username[0].toUpperCase() + username.substr(1);
 var totalContinent = {};
 var visitedContinent = {};
 
@@ -33,7 +30,7 @@ info.update = function (props) {
       for(var c in visitedContinent){
         if (visitedContinent[c].size > 0) visitedContinentStr += `<br />${c}: ${Math.round(visitedContinent[c].size*100/totalContinent[c])}%`;
       }
-      this._div.innerHTML = `<h4>Countries visited (${titleUsername})</h4>` + 
+      this._div.innerHTML = `<h4>Countries visited (${username})</h4>` + 
        (props ?
           `<b>${props.country}</b><br />`+
           (props.year ? `Visited in ${props.year}` + 
@@ -310,13 +307,13 @@ function saveData(evt) {
 }
 
 function init(username) {
-    document.title += ' ('+titleUsername+')';
+    document.title += ` (${username})`;
     countries1.features.map(f => f.properties.continent).forEach(ct => totalContinent[ct]?totalContinent[ct] += 1:totalContinent[ct] = 1)
 
     var bezocht = {countries:[]};
     var http = new XMLHTTPObject();
     var resultobj = {};
-    http.open("GET",'api/visit?q={"filters":[{"name":"username","op":"eq","val":"'+username+'"}]}', true);
+    http.open("GET", `api/visit?q={"filters":[{"name":"username","op":"eq","val":"${username}"}]}`, true);
     http.onreadystatechange = function() {
         if(http.readyState == 4 && http.status == 200) {
             var res = http.responseText
