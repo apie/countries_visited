@@ -1,17 +1,23 @@
 body {
     background: snow;
 }
-body > form:first-child {
+body > form {
 	/* login form */
     background: antiquewhite;
     padding: 0.5vw;
     border-radius: 2%;
+    border: 1px solid;
+    padding: 10px;
+    box-shadow: 5px 10px #888888;
 }
 #menu {
-    margin-top: 2vh;
+    margin-top: 4vh;
     background: antiquewhite;
-    padding: 0.5vw;
-    border-radius: 2%;
+    padding-left: 2vw;
+    padding-right: 2vw;
+    border-radius: 1%;
+    border: 1px solid;
+    box-shadow: 5px 10px #888888;
 }
 #map {
     width: 100%;
@@ -66,11 +72,10 @@ input {
     margin: 4px 2px;
 }
 input[type=submit] {
-    border: none;
+    border: 1px solid grey;
     background-color: #4CAF50;
     color: white;
     border-radius: 13%;
-    padding-inline: 10px;
 }
 a.no-underline {
     text-decoration: none;
