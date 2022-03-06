@@ -14,5 +14,5 @@ if [ ! -d "venv" ]; then
 fi
 source venv/bin/activate
 pip3 install -r requirements.txt
-venv/bin/gunicorn visited:app --reload -b localhost:8001
+gunicorn visited:app --reload -b localhost:8001
 

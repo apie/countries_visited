@@ -1,0 +1,17 @@
+[Unit]
+Description=Countries visited
+After=syslog.target
+
+[Service]
+Type=simple
+User=telegram
+Group=telegram
+Environment=PYTHONUNBUFFERED=1
+WorkingDirectory=/home/telegram/countries_visited/
+ExecStart=/home/telegram/countries_visited/start.bash
+ExecReload=/usr/bin/pkill -HUP -f 'countries_visited/venv/bin/gunicorn'
+Restart=always
+
+
+[Install]
+WantedBy=multi-user.target
