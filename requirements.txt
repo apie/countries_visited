@@ -48,7 +48,7 @@ flask-wtf==0.14.3
     # via flask-security-too
 gunicorn==20.0.4
     # via -r requirements.in
-idna==2.10
+idna==3.7
     # via email-validator
 itsdangerous==1.1.0
     # via
