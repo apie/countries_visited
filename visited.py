@@ -12,9 +12,9 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'visited.sqlite')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-app.config['SECURITY_REGISTERABLE'] = True
+app.config['SECURITY_REGISTERABLE'] = False
 app.config['SECURITY_DEFAULT_REMEMBER_ME'] = True
-app.config['SECURITY_RECOVERABLE'] = True
+app.config['SECURITY_RECOVERABLE'] = False
 app.config['SECURITY_UNAUTHORIZED_VIEW'] = '/login'
 app.config['SECURITY_SEND_PASSWORD_RESET_NOTICE_EMAIL'] = False
 app.config['SECURITY_EMAIL_SUBJECT_REGISTER'] = 'Welcome to Countries Visited'
