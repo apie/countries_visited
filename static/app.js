@@ -304,7 +304,7 @@ function init(username) {
     var bezocht = {countries:[]};
     var http = new XMLHTTPObject();
     var resultobj = {};
-    http.open("GET", `api/visit?q={"filters":[{"name":"username","op":"eq","val":"${username}"}]}`, true);
+    http.open("GET", "api/visit", true);
     http.onreadystatechange = function() {
         if(http.readyState == 4 && http.status == 200) {
             var res = http.responseText

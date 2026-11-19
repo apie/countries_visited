@@ -2,7 +2,6 @@
 import os
 import flask
 import flask_sqlalchemy
-from flask_restless import APIManager
 from flask_mail import Mail
 
 import config
@@ -65,16 +64,10 @@ class User(db.Model, fsqla.FsUserMixin):
     pass
 
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
-db.create_all()
+with app.app_context():
+    db.create_all()
 
-from preprocessors import check_user
-manager = APIManager(app, flask_sqlalchemy_db=db)
-manager.create_api(
-        Visit,
-        methods=['GET', 'POST', 'PUT', 'DELETE'],
-        results_per_page=-1,
-        preprocessors=check_user,
-)
+import preprocessors  # noqa: F401  (registers security handlers and the /api blueprint)
 
 from flask import send_from_directory
 
