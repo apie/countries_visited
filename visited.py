@@ -90,7 +90,8 @@ def favicon():
 @app.route("/user.js")
 @auth_required()
 def username():
-    return render_template_string("username = '{{ current_user.email }}';")
+    resp = render_template_string("username = '{{ current_user.email }}';")
+    return flask.Response(resp, mimetype='application/javascript')
 
 if __name__ == '__main__':
     app.run()
