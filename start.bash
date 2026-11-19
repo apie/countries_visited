@@ -9,10 +9,5 @@ if [ ! -f 'config.py' ]; then
   echo 'Please edit the config file: config.py'
   exit 1
 fi
-if [ ! -d "venv" ]; then
-  virtualenv --python=python3 venv
-fi
-source venv/bin/activate
-pip3 install -r requirements.txt
-gunicorn visited:app --reload -b localhost:8001
-
+~/.local/bin/uv sync
+~/.local/bin/uv run --no-sync gunicorn visited:app -b localhost:${PORT:-8001}
